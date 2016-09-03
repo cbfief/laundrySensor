@@ -97,8 +97,11 @@ void checkWasher() {
   int washerDone = digitalRead(washerDonePin);
 
   if (washerOn == 0 && washerStart == 1){
-    washerOn = 1;
-    Homie.setNodeProperty(washerNode, "status", String("ON"));
+    washerStart = digitalRead(washerStartPin);
+    if (washerStart == 1){
+      washerOn = 1;
+      Homie.setNodeProperty(washerNode, "status", String("ON"));
+    }
   }
 
   if (washerOn == 1 && washerDone == 1){
