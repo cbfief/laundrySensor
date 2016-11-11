@@ -10,6 +10,7 @@ const int dryerStopThreshold = 120000;
 bool vibDetected = 0;
 int count = 0;
 int dryerOn = 0;
+int washerCount = 0;
 bool washerOn = 0;
 bool washerOff = 0;
 long startTime = 0;
@@ -24,6 +25,7 @@ void setup() {
   Homie.setSetupFunction(setupHandler);
   Homie.setLoopFunction(loopHandler);
   Homie.setup();
+  //Serial.begin(9600);
 }
 
 void loop() {
@@ -95,10 +97,10 @@ bool checkVibration() {
 void checkWasher() {
   int washerStart = digitalRead(washerStartPin);
   int washerDone = digitalRead(washerDonePin);
-
+  
   if (washerOn == 0 && washerStart == 1){
-    washerStart = digitalRead(washerStartPin);
-    if (washerStart == 1){
+    washerCount = (washerCount + 1);
+    if (washerCount == 100){
       washerOn = 1;
       Homie.setNodeProperty(washerNode, "status", String("ON"));
     }
