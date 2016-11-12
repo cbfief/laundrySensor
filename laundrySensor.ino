@@ -106,6 +106,10 @@ void checkWasher() {
     }
   }
 
+  if (washerStart == 0){
+    washerCount = 0;
+  }
+
   if (washerOn == 1 && washerDone == 1){
     washerOn = 0;
     Homie.setNodeProperty(washerNode, "status", String("OFF"));
