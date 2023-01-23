@@ -1,0 +1,71 @@
+esphome:
+  name: laundry-sensor
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  domain: !secret domain
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "LaundrySensor"
+    password: !secret ap_pw
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret api_pw
+
+ota:
+  password: !secret ota_pw
+
+  
+binary_sensor:
+  - platform: status
+    name: "Laundry Sensor"
+    
+  - platform: gpio
+    pin: D5
+    name: "vibration_sensor"
+    id: "vibration_sensor"
+    internal: false
+    filters:
+      - delayed_on: 20ms
+      - delayed_off: 20ms
+      
+  - platform: template
+    name: "dryer"
+    lambda: |-
+      if (id(vibration_sensor).state) {
+        return false;
+      } else {
+        return true;
+      }
+    filters:
+      #- debounce: 5s
+      - delayed_on: 30s
+      - delayed_off: 30s
+
+  - platform: template
+    name: "washer"
+    lambda: |-
+      if (id(washer_reading).state > .5) {
+        return true;
+      } else {
+        return false;
+      }
+    
+sensor:
+  - platform: adc
+    pin: A0
+    id: "washer_reading"
+    update_interval: 5s
+    internal: true
+
+    
